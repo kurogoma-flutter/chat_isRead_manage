@@ -1,0 +1,34 @@
+name: chat_app_read
+description: チャット型SNSで既読機能を実装
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.1 <3.0.0"
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  cloud_firestore:
+  firebase_auth:
+  flutter_riverpod:
+  firebase_core:
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+  flutter_lints: ^2.0.0
+
+
+flutter:
+
+  uses-material-design: true
+
