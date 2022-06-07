@@ -19,6 +19,7 @@ dependencies:
   flutter_riverpod:
   firebase_core:
   uuid:
+  go_router:
 
 
 dev_dependencies:
