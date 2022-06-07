@@ -31,8 +31,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Object? get notReadChatData => null;
-
   @override
   void initState() {
     super.initState();
