@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'login_page.dart';
@@ -200,23 +200,30 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   Future<void> _readChatMessage() async {
     for (final chatDocumentId in widget.notReadChatList) {
-      // FirebaseFirestore.instance
-      //     .collection('chatRoom')
-      //     .doc(widget.roomId)
-      //     .collection('chatMessage')
-      //     .doc(chatDocumentId)
-      //     .update({'readUsers': readUsers});
-      _getReadUserList(chatDocumentId);
+      List readUsers = await _fetchReadUserList(chatDocumentId);
+      String uid = FirebaseAuth.instance.currentUser!.uid;
+      if (!readUsers.contains(uid)) {
+        readUsers.add(uid);
+        FirebaseFirestore.instance
+            .collection('chatRoom')
+            .doc(widget.roomId)
+            .collection('chatMessage')
+            .doc(chatDocumentId)
+            .update({'readUsers': readUsers});
+      }
     }
   }
 
-  Future _getReadUserList(String chatDocumentId) async {
+  Future _fetchReadUserList(String chatDocumentId) async {
     var snapshot = await FirebaseFirestore.instance
         .collection('chatRoom')
         .doc(widget.roomId)
         .collection('chatMessage')
         .doc(chatDocumentId)
         .get();
+
+    var data = snapshot.data();
+    return data!['readUsers'];
   }
 
   @override
