@@ -31,6 +31,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Object? get notReadChatData => null;
+
   @override
   void initState() {
     super.initState();
@@ -68,11 +70,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     leading: const CircleAvatar(),
                     title: Text('${data['roomId']}'),
                     subtitle: Text('${data['latestMessage']}'),
-                    trailing: FutureBuilder<QuerySnapshot>(
-                      future: FirebaseFirestore.instance
+                    trailing: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
                           .collectionGroup('chatMessage')
                           .where('roomId', isEqualTo: data['roomId'])
-                          .get(),
+                          .snapshots(),
                       builder: (BuildContext context,
                           AsyncSnapshot<QuerySnapshot> snapshot) {
                         if (snapshot.hasData) {
@@ -90,13 +92,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                 message.id.toString()
                               ];
                             }
+
                             List messageList = message['readUsers'];
                             if (!messageList
                                 .contains('L12aTxOq1haZum5elgs7sbnZLhI3')) {
                               dataCount++;
                             }
                           }
-                          print(notReadChatData);
+
+                          data['notReadChatData'] = notReadChatData;
 
                           return Visibility(
                               visible: dataCount > 0,
@@ -115,7 +119,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         return const SizedBox();
                       },
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      if (data.containsKey('notReadChatData')) {
+                        print(data['notReadChatData']);
+                      }
+                    },
                   ),
                 );
               }).toList(),
