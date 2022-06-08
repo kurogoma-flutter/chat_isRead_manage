@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,22 +16,22 @@ class AuthPageViewModel extends ChangeNotifier {
   String password = '';
   bool isObscure = true;
 
-  handleEmail(e) {
+  void handleEmail(String e) {
     email = e;
     notifyListeners();
   }
 
-  handlePassword(e) {
+  void handlePassword(String e) {
     password = e;
     notifyListeners();
   }
 
-  convertObscure() {
+  void convertObscure() {
     isObscure = !isObscure;
     notifyListeners();
   }
 
-  clearText() {
+  void clearText() {
     email = '';
     password = '';
     isObscure = true;
@@ -40,7 +39,7 @@ class AuthPageViewModel extends ChangeNotifier {
   }
 
   /// サインアウト処理
-  Future signOut(BuildContext context) async {
+  Future<void> signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
       // ignore: use_build_context_synchronously
@@ -52,22 +51,20 @@ class AuthPageViewModel extends ChangeNotifier {
   }
 
   /// メール認証：ユーザーログイン
-  Future login(BuildContext context) async {
+  Future<void> login(BuildContext context) async {
     try {
       // メール/パスワードでログイン
-      final FirebaseAuth auth = FirebaseAuth.instance;
-      final UserCredential result = await auth.signInWithEmailAndPassword(
+      final auth = FirebaseAuth.instance;
+      final result = await auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      // ログインに成功した場合
-      final User user = result.user!;
 
       // ignore: use_build_context_synchronously
       return context.go('/');
     } on FirebaseAuthException catch (e) {
       // ログインに失敗した場合
-      String message = '';
+      var message = '';
       // エラーコード別処理
       switch (e.code) {
         case 'invalid-email':
