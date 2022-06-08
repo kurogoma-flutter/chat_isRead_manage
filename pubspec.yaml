@@ -10,28 +10,22 @@ environment:
 
 
 dependencies:
-  flutter:
-    sdk: flutter
-
-  cupertino_icons: ^1.0.2
   cloud_firestore:
   firebase_auth:
-  flutter_riverpod:
   firebase_core:
-  uuid:
+  flutter:
+    sdk: flutter
+  flutter_riverpod:
   go_router:
-
+  uuid:
 
 dev_dependencies:
+  flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
-
-
-  flutter_lints: ^2.0.0
   pedantic_mono: any
 
 
 flutter:
-
   uses-material-design: true
 

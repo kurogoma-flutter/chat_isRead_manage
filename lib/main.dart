@@ -21,7 +21,7 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,26 +35,27 @@ class MyApp extends StatelessWidget {
 }
 
 class HomePage extends ConsumerWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(authPageViewModelProvider);
     return StreamBuilder<User?>(
-        stream: viewModel.authStateStream,
-        builder: (context, snapshot) {
-          // 取得中はローディング
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          // 取得後、データの有無でログインページorホームページ
-          if (snapshot.hasData) {
-            return const MyHomePage();
-          } else {
-            return const LoginPage();
-          }
-        });
+      stream: viewModel.authStateStream,
+      builder: (context, snapshot) {
+        // 取得中はローディング
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        // 取得後、データの有無でログインページorホームページ
+        if (snapshot.hasData) {
+          return const MyHomePage();
+        } else {
+          return const LoginPage();
+        }
+      },
+    );
   }
 }

@@ -18,5 +18,6 @@ final GoRouter router = GoRouter(
       //       return ChatDetailPage(roomId: roomId, readUsers: readUsers);
       //     }),
     ],
+    // ignore: avoid_redundant_argument_values
     initialLocation: '/',
   );

@@ -47,6 +47,8 @@ class AuthPageViewModel extends ChangeNotifier {
     } on FirebaseAuthException catch (e) {
       // ignore: avoid_print
       print('サインアウトに失敗しました');
+      // ignore: avoid_print
+      print(e);
     }
   }
 
@@ -55,6 +57,7 @@ class AuthPageViewModel extends ChangeNotifier {
     try {
       // メール/パスワードでログイン
       final auth = FirebaseAuth.instance;
+      // ignore: unused_local_variable
       final result = await auth.signInWithEmailAndPassword(
         email: email,
         password: password,

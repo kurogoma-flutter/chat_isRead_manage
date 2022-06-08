@@ -4,10 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginPage extends ConsumerWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // viewModel定義
     final viewModelWatch = ref.watch(authPageViewModelProvider);
     final viewModelRead = ref.read(authPageViewModelProvider);
@@ -18,8 +18,10 @@ class LoginPage extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-        title: const Text('ログインページ',
-            style: TextStyle(fontWeight: FontWeight.w400)),
+        title: const Text(
+          'ログインページ',
+          style: TextStyle(fontWeight: FontWeight.w400),
+        ),
       ),
       body: Center(
         child: Column(
@@ -43,16 +45,13 @@ class LoginPage extends ConsumerWidget {
                   labelText: 'メールアドレス',
                   hintText: 'sample@gmail.com',
                   focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueAccent)),
-                  border: OutlineInputBorder(borderSide: BorderSide()),
+                      borderSide: BorderSide(color: Colors.blueAccent),),
+                  border: OutlineInputBorder(),
                 ),
-                maxLines: 1,
-                onChanged: (value) {
-                  viewModelRead.handleEmail(value);
-                },
+                onChanged: viewModelRead.handleEmail,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return "入力してください";
+                    return '入力してください';
                   }
                   return null;
                 },
@@ -71,24 +70,19 @@ class LoginPage extends ConsumerWidget {
                   labelText: 'パスワード',
                   hintText: 'Enter Your Password',
                   focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueAccent)),
-                  border: const OutlineInputBorder(borderSide: BorderSide()),
+                      borderSide: BorderSide(color: Colors.blueAccent),),
+                  border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: Icon(viewModelWatch.isObscure
                         ? Icons.visibility_off
-                        : Icons.visibility),
-                    onPressed: () {
-                      viewModelRead.convertObscure();
-                    },
+                        : Icons.visibility,),
+                    onPressed: viewModelRead.convertObscure,
                   ),
                 ),
-                maxLines: 1,
-                onChanged: (value) {
-                  viewModelRead.handlePassword(value);
-                },
+                onChanged: viewModelRead.handlePassword,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return "入力してください";
+                    return '入力してください';
                   }
                   return null;
                 },

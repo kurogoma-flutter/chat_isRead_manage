@@ -60,7 +60,7 @@ class ChatPageViewModel extends ChangeNotifier {
     }
   }
 
-  Future<List<String>> fetchReadUserList(
+  Future<List<dynamic>> fetchReadUserList(
     String chatDocumentId,
     String roomId,
   ) async {
@@ -72,14 +72,47 @@ class ChatPageViewModel extends ChangeNotifier {
         .get();
 
     final data = snapshot.data();
-    return data!['readUsers'] as List<String>;
+    return data!['readUsers'] as List<dynamic>;
   }
 
   Stream<QuerySnapshot> chatMessageStream(String roomId) {
     return FirebaseFirestore.instance
-              .collection('chatRoom')
-              .doc(roomId)
-              .collection('chatMessage')
-              .snapshots();
-  } 
+        .collection('chatRoom')
+        .doc(roomId)
+        .collection('chatMessage')
+        .snapshots();
+  }
+
+  // 入力テキスト
+  String chatInputText = '';
+
+  // ignore: use_setters_to_change_properties
+  void handleText(String value) {
+    chatInputText = value;
+  }
+
+  // フォームリセット
+  void clearInput(TextEditingController textEditingController) {
+    textEditingController.clear();
+    chatInputText = '';
+    notifyListeners();
+  }
+
+  Future<void> postChatMessage(String roomId) async {
+    // テキストが空白でなけでば送信可能
+    if (chatInputText.isNotEmpty) {
+      final uid = FirebaseAuth.instance.currentUser!.uid;
+      await FirebaseFirestore.instance
+          .collection('chatRoom')
+          .doc(roomId)
+          .collection('chatMessage')
+          .add(<String, dynamic>{
+        'uid': uid,
+        'createdAt': Timestamp.now(),
+        'message': chatInputText,
+        'roomId': roomId,
+        'readUsers': [uid]
+      });
+    }
+  }
 }

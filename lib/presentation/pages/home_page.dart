@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../logic/auth_service_provider.dart';
-import 'chat_datail_page.dart';
 
 class MyHomePage extends ConsumerWidget {
   const MyHomePage({super.key});
@@ -29,64 +28,66 @@ class MyHomePage extends ConsumerWidget {
         ],
       ),
       body: StreamBuilder<QuerySnapshot>(
-          stream: chatViewModel.chatRoomListStream,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
+        stream: chatViewModel.chatRoomListStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            }
-            if (!snapshot.hasData) {
-              return const Center(child: Text('データが見つかりません'));
-            }
-            // データ表示
-            return ListView(
-              children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                final data = document.data()! as Map<String, dynamic>;
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+          if (!snapshot.hasData) {
+            return const Center(child: Text('データが見つかりません'));
+          }
+          // データ表示
+          return ListView(
+            children: snapshot.data!.docs.map((DocumentSnapshot document) {
+              final data = document.data()! as Map<String, dynamic>;
 
-                return Card(
-                  child: ListTile(
-                    leading: const CircleAvatar(),
-                    title: Text('${data['roomId']}'),
-                    subtitle: Text('${data['latestMessage']}'),
-                    trailing: StreamBuilder<QuerySnapshot>(
-                      stream: chatViewModel.notReadChatStream(data),
-                      builder: (
-                        BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot,
-                      ) {
-                        if (snapshot.hasData) {
-                          // Note: ここで扱う変数はListView単体向けの変数のため、こういう時にhooks使うと良さそう
-                          final messageData = snapshot.data!.docs;
-                          final notReadChatList = <String>[];
-                          var readUserList = <String>[];
-                          var dataCount = 0;
-                          for (final message in messageData) {
-                            notReadChatList.add(message.id);
-                            readUserList = message['readUsers'] as List<String>;
-                            if (!readUserList.contains(
-                                FirebaseAuth.instance.currentUser!.uid)) {
-                              dataCount++;
-                            }
+              return Card(
+                child: ListTile(
+                  leading: const CircleAvatar(),
+                  title: Text('${data['roomId']}'),
+                  subtitle: Text('${data['latestMessage']}'),
+                  trailing: StreamBuilder<QuerySnapshot>(
+                    stream: chatViewModel.notReadChatStream(data),
+                    builder: (
+                      BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot,
+                    ) {
+                      if (snapshot.hasData) {
+                        // Note: ここで扱う変数はListView単体向けの変数のため、こういう時にhooks使うと良さそう
+                        final messageData = snapshot.data!.docs;
+                        final notReadChatList = <String>[];
+                        var readUserList = <dynamic>[];
+                        var dataCount = 0;
+                        for (final message in messageData) {
+                          notReadChatList.add(message.id);
+                          readUserList = message['readUsers'] as List;
+                          if (!readUserList.contains(
+                            FirebaseAuth.instance.currentUser!.uid,
+                          )) {
+                            dataCount++;
                           }
-                          data['notReadChatList'] = notReadChatList;
-
-                          return NotReadChatCountWidget(dataCount: dataCount);
                         }
-                        return const SizedBox();
-                      },
-                    ),
-                    onTap: () {
-                      // Todo: GoRouterに組み込みたいが、配列の受け渡しができない
-                      chatViewModel.pushToChatDetailPage(context, data);
+                        data['notReadChatList'] = notReadChatList;
+
+                        return NotReadChatCountWidget(dataCount: dataCount);
+                      }
+                      return const SizedBox();
                     },
                   ),
-                );
-              }).toList(),
-            );
-          }),
+                  onTap: () {
+                    // Todo: GoRouterに組み込みたいが、配列の受け渡しができない
+                    chatViewModel.pushToChatDetailPage(context, data);
+                  },
+                ),
+              );
+            }).toList(),
+          );
+        },
+      ),
     );
   }
 }
