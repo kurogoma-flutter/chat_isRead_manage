@@ -66,13 +66,15 @@ class AuthPageViewModel extends ChangeNotifier {
     try {
       // メール/パスワードでログイン
       final auth = FirebaseAuth.instance;
-      print(email);
-      print(password);
+
       // ignore: unused_local_variable
       final result = await auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      
+      // ログインできたらステート破棄（リセット）
+      clearText();
 
       // ignore: use_build_context_synchronously
       return context.go('/');
