@@ -8,12 +8,15 @@ class LoginPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // viewModel定義
+    // viewModelを呼び出し
+    // ref.watch() => 再レンダリングしたい変数用
     final viewModelWatch = ref.watch(authPageViewModelProvider);
+    // ref.read() => 再レンダリングが発生して欲しくないメソッドなど用
     final viewModelRead = ref.read(authPageViewModelProvider);
 
     return Scaffold(
       appBar: AppBar(
+        // 簡易戻るボタン
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
@@ -27,12 +30,7 @@ class LoginPage extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'メールアドレスでログイン',
-              style: TextStyle(
-                fontSize: 20,
-              ),
-            ),
+            const Text('メールアドレスでログイン', style: TextStyle(fontSize: 20)),
             Container(
               padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
               margin: const EdgeInsets.symmetric(vertical: 20),
@@ -45,10 +43,13 @@ class LoginPage extends ConsumerWidget {
                   labelText: 'メールアドレス',
                   hintText: 'sample@gmail.com',
                   focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueAccent),),
+                    borderSide: BorderSide(color: Colors.blueAccent),
+                  ),
                   border: OutlineInputBorder(),
                 ),
+                // 入力したテキストを変数に反映
                 onChanged: viewModelRead.handleEmail,
+                // 入力バリデーション
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return '入力してください';
@@ -64,18 +65,23 @@ class LoginPage extends ConsumerWidget {
                 autovalidateMode:
                     AutovalidateMode.onUserInteraction, // 入力時バリデーション
                 cursorColor: Colors.blueAccent,
+                // パスワードの表示非表示
                 obscureText: viewModelWatch.isObscure,
                 decoration: InputDecoration(
                   focusColor: Colors.red,
                   labelText: 'パスワード',
                   hintText: 'Enter Your Password',
                   focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blueAccent),),
+                    borderSide: BorderSide(color: Colors.blueAccent),
+                  ),
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
-                    icon: Icon(viewModelWatch.isObscure
-                        ? Icons.visibility_off
-                        : Icons.visibility,),
+                    // パスワードの表示非表示
+                    icon: Icon(
+                      viewModelWatch.isObscure
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
                     onPressed: viewModelRead.convertObscure,
                   ),
                 ),
@@ -95,20 +101,15 @@ class LoginPage extends ConsumerWidget {
               width: 200,
               child: ElevatedButton(
                 onPressed: () async {
+                  // ログイン処理
                   await viewModelRead.login(context);
-                  // clearText();
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.blueAccent,
                   onPrimary: Colors.white,
                   shape: const StadiumBorder(),
                 ),
-                child: const Text(
-                  'ログイン',
-                  style: TextStyle(
-                    fontSize: 24,
-                  ),
-                ),
+                child: const Text('ログイン', style: TextStyle(fontSize: 24)),
               ),
             ),
             const SizedBox(height: 20),

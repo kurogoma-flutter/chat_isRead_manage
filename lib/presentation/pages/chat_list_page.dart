@@ -17,40 +17,47 @@ class MyHomePage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('サンプルSNS'),
+        title: const Text('チャットアプリの既読管理'),
         actions: [
+          // サインアウト用ボタン
           IconButton(
             onPressed: () {
               authViewModel.signOut(context);
             },
-            icon: const Icon(Icons.signpost_outlined),
+            icon: const Icon(Icons.logout_outlined),
           ),
         ],
       ),
       body: StreamBuilder<QuerySnapshot>(
+        // 監視対象。ここのクエリで取得できるデータに変化があった場合再描画される
         stream: chatViewModel.chatRoomListStream,
         builder: (context, snapshot) {
+          // .connectionStateで接続状況の取得ができるので、これで色々切り替えても良い
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-
+          // エラーが発生した時の処理（エラー画面遷移など）
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           }
+          // Streamのクエリ条件でデータが0件だった場合
           if (!snapshot.hasData) {
             return const Center(child: Text('データが見つかりません'));
           }
           // データ表示
           return ListView(
             children: snapshot.data!.docs.map((DocumentSnapshot document) {
+              // こうすることでdata['firestoreで設定したフィールドのキー']が使える
               final data = document.data()! as Map<String, dynamic>;
 
               return Card(
                 child: ListTile(
                   leading: const CircleAvatar(),
-                  title: Text('${data['roomId']}'),
+                  title: Text('${data['roomName']}'),
                   subtitle: Text('${data['latestMessage']}'),
+                  // 通知管理用にStreamBuilderをネストする
                   trailing: StreamBuilder<QuerySnapshot>(
+                    // 未読状態の数を取得する
                     stream: chatViewModel.notReadChatStream(data),
                     builder: (
                       BuildContext context,
@@ -59,22 +66,24 @@ class MyHomePage extends ConsumerWidget {
                       if (snapshot.hasData) {
                         // Note: ここで扱う変数はListView単体向けの変数のため、こういう時にhooks使うと良さそう
                         final messageData = snapshot.data!.docs;
-                        final notReadChatList = <String>[];
-                        var readUserList = <dynamic>[];
-                        var dataCount = 0;
+                        final notReadChatList = <String>[]; // 次画面に引き渡す未読チャットリスト
+                        var readUserList = <dynamic>[]; // 既読ユーザーリスト
+                        var notReadCount = 0; // 未読数カウント
+                        // チャット一覧から未読未読ユーザーの取得
                         for (final message in messageData) {
                           notReadChatList.add(message.id);
                           readUserList = message['readUsers'] as List;
                           if (!readUserList.contains(
                             FirebaseAuth.instance.currentUser!.uid,
                           )) {
-                            dataCount++;
+                            notReadCount++;
                           }
                         }
                         data['notReadChatList'] = notReadChatList;
-
-                        return NotReadChatCountWidget(dataCount: dataCount);
+                        // 未読数を表示する数字のウィジェット
+                        return NotReadChatCountWidget(dataCount: notReadCount);
                       }
+                      // データが取得できなかった場合の仮置き
                       return const SizedBox();
                     },
                   ),

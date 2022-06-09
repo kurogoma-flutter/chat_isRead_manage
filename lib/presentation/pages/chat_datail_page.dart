@@ -12,9 +12,11 @@ class ChatDetailPage extends ConsumerStatefulWidget {
     super.key,
     required this.notReadChatList,
     required this.roomId,
+    required this.roomName,
   });
   final List<String> notReadChatList;
   final String roomId;
+  final String roomName;
 
   @override
   ConsumerState<ChatDetailPage> createState() => _ChatDetailPageState();
@@ -27,7 +29,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('チャットメッセージ'),
+        title: Text(widget.roomName),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: chatViewModel.chatMessageStream(widget.roomId),
@@ -48,26 +50,31 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
             widget.roomId,
           );
           // データ表示
+          final chatItemList = snapshot.data!.docs;
           return Column(
             children: <Widget>[
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 10),
-                  child: ListView(
-                    children:
-                        snapshot.data!.docs.map((DocumentSnapshot document) {
-                      final data = document.data()! as Map<String, dynamic>;
-
-                      return data['uid'] ==
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    reverse: true,
+                    // controller: _scrollController,
+                    itemCount: chatItemList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final data = chatItemList;
+                      // ignore: unrelated_type_equality_checks
+                      return data[index]['uid'] ==
                               FirebaseAuth.instance.currentUser!.uid
                           ? RightBalloon(
-                              content: data['message'] as String,
-                              readUsers: data['readUsers'] as List<dynamic>,
+                              content: data[index]['message'] as String,
+                              readUsers:
+                                  data[index]['readUsers'] as List<dynamic>,
                             )
                           : LeftBalloon(
-                              content: data['message'] as String,
+                              content: data[index]['message'] as String,
                             );
-                    }).toList(),
+                    },
                   ),
                 ),
               ),

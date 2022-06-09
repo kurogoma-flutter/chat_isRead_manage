@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../presentation/pages/chat_datail_page.dart';
 
+// ignore: lines_longer_than_80_chars
 final chatViewModelProvider = ChangeNotifierProvider<ChatPageViewModel>(
   (ref) {
     return ChatPageViewModel();
@@ -27,13 +28,17 @@ class ChatPageViewModel extends ChangeNotifier {
   }
 
   // Todo: GoRouterに組み込みたいが、配列の受け渡しができない
-  void pushToChatDetailPage(BuildContext context, Map<String, dynamic> data) {
+  void pushToChatDetailPage(
+    BuildContext context,
+    Map<String, dynamic> data,
+  ) {
     Navigator.of(context).push<dynamic>(
       MaterialPageRoute<dynamic>(
         builder: (context) {
           return ChatDetailPage(
             roomId: data['roomId'] as String,
             notReadChatList: data['notReadChatList'] as List<String>,
+            roomName: data['roomName'] as String,
           );
         },
       ),
@@ -80,6 +85,7 @@ class ChatPageViewModel extends ChangeNotifier {
         .collection('chatRoom')
         .doc(roomId)
         .collection('chatMessage')
+        .orderBy('createdAt', descending: true)
         .snapshots();
   }
 
@@ -113,6 +119,18 @@ class ChatPageViewModel extends ChangeNotifier {
         'roomId': roomId,
         'readUsers': [uid]
       });
+      // 親のchatRoomコレクションを更新
+      await updateChatRoomInfo(roomId);
     }
+  }
+
+  Future<void> updateChatRoomInfo(String roomId) async {
+    await FirebaseFirestore.instance
+        .collection('chatRoom')
+        .doc(roomId)
+        .update(<String, dynamic>{
+      'latestMessageAt': Timestamp.now(),
+      'latestMessage': chatInputText,
+    });
   }
 }

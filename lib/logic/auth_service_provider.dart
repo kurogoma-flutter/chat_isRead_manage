@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+// ignore: lines_longer_than_80_chars
 final authPageViewModelProvider = ChangeNotifierProvider<AuthPageViewModel>(
   (ref) {
     return AuthPageViewModel();
@@ -12,25 +13,30 @@ final authPageViewModelProvider = ChangeNotifierProvider<AuthPageViewModel>(
 class AuthPageViewModel extends ChangeNotifier {
   AuthPageViewModel();
 
+  // watch対象の変数
   String email = '';
   String password = '';
   bool isObscure = true;
 
+  // 内部的に変数が変わるだけで良いので、notifyListeners()による再描画は不要
+  // ignore: use_setters_to_change_properties
   void handleEmail(String e) {
     email = e;
-    notifyListeners();
   }
 
+  // 内部的に変数が変わるだけで良いので、notifyListeners()による再描画は不要
+  // ignore: use_setters_to_change_properties
   void handlePassword(String e) {
     password = e;
-    notifyListeners();
   }
 
+  // UIの切り替えがあるのでnotifyListeners()が必要
   void convertObscure() {
     isObscure = !isObscure;
     notifyListeners();
   }
 
+  // Note: autoDisposeがある場合不要になるが、disposeされない時手動削除が必要
   void clearText() {
     email = '';
     password = '';
@@ -38,17 +44,20 @@ class AuthPageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 認証状態を取得するStream => StreamBuilderに渡す
+  Stream<User?> authStateStream = FirebaseAuth.instance.authStateChanges();
+
   /// サインアウト処理
   Future<void> signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
+      // ログインページに遷移すると、もしかしたら認証状態があるのにログインしてしまう場合がある。
+      // トップページに遷移すれば認証情報を取得してからログインページに遷移するので安心。
       // ignore: use_build_context_synchronously
       context.go('/');
     } on FirebaseAuthException catch (e) {
-      // ignore: avoid_print
-      print('サインアウトに失敗しました');
-      // ignore: avoid_print
-      print(e);
+      debugPrint('サインアウトに失敗しました');
+      debugPrint(e.toString());
     }
   }
 
@@ -57,6 +66,8 @@ class AuthPageViewModel extends ChangeNotifier {
     try {
       // メール/パスワードでログイン
       final auth = FirebaseAuth.instance;
+      print(email);
+      print(password);
       // ignore: unused_local_variable
       final result = await auth.signInWithEmailAndPassword(
         email: email,
@@ -98,11 +109,7 @@ class AuthPageViewModel extends ChangeNotifier {
           message = '予期せぬエラーが発生しました。';
       }
 
-      // ignore: avoid_print
       print(message);
     }
   }
-
-  /// ログインステータスを監視し、ページ切り替えをする
-  Stream<User?> authStateStream = FirebaseAuth.instance.authStateChanges();
 }
