@@ -1,4 +1,4 @@
-import 'package:chat_app_read/logic/chat_service_provider.dart';
+import 'package:chat_app_read/logic/chat_view_model.dart';
 import 'package:chat_app_read/presentation/components/chat_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

@@ -1,10 +1,10 @@
-import 'package:chat_app_read/logic/chat_service_provider.dart';
+import 'package:chat_app_read/logic/chat_view_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../logic/auth_service_provider.dart';
+import '../../logic/auth_view_model.dart';
 
 class MyHomePage extends ConsumerWidget {
   const MyHomePage({super.key});

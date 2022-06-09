@@ -1,4 +1,4 @@
-import 'package:chat_app_read/logic/chat_service_provider.dart';
+import 'package:chat_app_read/logic/chat_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
