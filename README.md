@@ -1,16 +1,10 @@
 # chat_app_read
 
 チャット型SNSで既読機能を実装
+前回チャットルームに対してのみ既読機能を実装しましたが、
+今回各メッセージに既読管理をさせることでLineのような既読機能を実装することができました。
 
-## Getting Started
+簡単な解説はQiitaにまとめたので、よければご覧ください。
+LGTMやフォローいただけると嬉しいです。
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+https://qiita.com/kurogoma939/items/535853d341a84758c4c1
