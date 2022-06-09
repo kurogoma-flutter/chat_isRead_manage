@@ -58,7 +58,7 @@ class HomePage extends ConsumerWidget {
         }
         // 認証情報の有無によりページを切り替える
         if (snapshot.hasData) {
-          return const MyHomePage();
+          return const ChatListPage();
         }
 
         return const LoginPage();

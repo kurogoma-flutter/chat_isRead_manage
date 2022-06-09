@@ -6,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../logic/auth_view_model.dart';
 
-class MyHomePage extends ConsumerWidget {
-  const MyHomePage({super.key});
+class ChatListPage extends ConsumerWidget {
+  const ChatListPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
